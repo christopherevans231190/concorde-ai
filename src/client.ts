@@ -127,15 +127,7 @@ async function start() {
       disableInputAudio: true,
     });
 
-    // Prepare agent audio input stream BEFORE connecting ElevenLabs
-    const agentAudioInputStream = anamClient.createAgentAudioInputStream({
-      encoding: "pcm_s16le",
-      sampleRate: 16000,
-      channels: 1,
-    });
-
-    // Wait for the FIRST VIDEO FRAME to be rendered before launching ElevenLabs.
-    // This is the key to avoiding the "avatar appears mid-sentence" stutter.
+    // Set up listener BEFORE starting the stream to catch the first frame event
     const videoReadyPromise = new Promise<void>((resolve) => {
       anamClient!.addListener(AnamEvent.VIDEO_PLAY_STARTED, () => {
         console.log("[Anam] First video frame rendered, avatar is ready");
@@ -143,7 +135,7 @@ async function start() {
       });
     });
 
-    // Start streaming to video element (kicks off the avatar pipeline)
+    // Start streaming to video element (this starts the Anam session)
     setLoadingState("loading-avatar");
     showVideo(true);
     await anamClient.streamToVideoElement("anam-video");
@@ -152,10 +144,19 @@ async function start() {
       anamClient.getActiveSessionId()
     );
 
-    // Wait until the first frame is actually displayed
+    // Wait until the first video frame is actually displayed
+    // This is the key to avoiding the "avatar appears mid-sentence" stutter
     await videoReadyPromise;
 
-    // Now connect ElevenLabs - avatar is visible and ready to lip-sync
+    // Now that the session is started AND the avatar is visible,
+    // create the agent audio input stream
+    const agentAudioInputStream = anamClient.createAgentAudioInputStream({
+      encoding: "pcm_s16le",
+      sampleRate: 16000,
+      channels: 1,
+    });
+
+    // Connect ElevenLabs - avatar is visible and ready to lip-sync
     await connectElevenLabs(config.elevenLabsAgentId, {
       onReady: () => {
         setConnected(true);
