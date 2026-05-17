@@ -21,21 +21,21 @@ export const Index = (c: Context) => {
             >
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
-            <span>ElevenLabs + Anam Integration Demo</span>
+            <span>Concorde AI</span>
           </div>
         </header>
 
         {/* Main card */}
-        <main class="w-full max-w-lg">
+        <main class="w-full max-w-md sm:max-w-2xl lg:max-w-4xl">
           {/* Avatar video area */}
           <div
             id="avatar-container"
-            class="relative aspect-video w-full mx-auto mb-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 overflow-hidden"
+            class="relative aspect-video w-full mx-auto mb-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 overflow-hidden"
           >
             {/* Video element for Anam avatar */}
             <video
               id="anam-video"
-              class="absolute inset-0 w-full h-full object-contain hidden"
+              class="absolute inset-0 w-full h-full object-cover hidden"
               autoplay
               playsinline
             />
@@ -107,12 +107,11 @@ export const Index = (c: Context) => {
             </div>
           </div>
 
-          {/* Controls card */}
-          <div class="bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl p-6 space-y-5">
-            {/* Connect button */}
+          {/* Connect button - centered, full width on mobile, capped on desktop */}
+          <div class="flex justify-center">
             <button
               id="connect-btn"
-              class="w-full py-3 px-4 bg-labs-600 hover:bg-labs-500 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+              class="w-full sm:w-auto sm:min-w-64 px-8 py-3 bg-labs-600 hover:bg-labs-500 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               <svg
                 id="btn-icon-mic"
@@ -138,27 +137,15 @@ export const Index = (c: Context) => {
               </svg>
               <span id="btn-text">Start Conversation</span>
             </button>
-
-            {/* Transcript area */}
-            <div class="space-y-2">
-              <label class="block text-xs text-zinc-400 uppercase tracking-wider">
-                Transcript
-              </label>
-              <div
-                id="transcript"
-                class="h-48 overflow-y-auto bg-zinc-800/30 border border-zinc-800 rounded-lg p-4 text-sm space-y-3"
-              >
-                <p class="text-zinc-500 text-center text-xs">
-                  Conversation transcript will appear here...
-                </p>
-              </div>
-            </div>
           </div>
+
+          {/* Hidden transcript (kept for code compatibility, not displayed) */}
+          <div id="transcript" class="hidden" />
 
           {/* Error display */}
           <div
             id="error-container"
-            class="hidden mt-4 p-4 bg-red-900/20 border border-red-800 rounded-lg"
+            class="hidden mt-4 p-4 bg-red-900/20 border border-red-800 rounded-lg max-w-lg mx-auto"
           >
             <p id="error-text" class="text-red-400 text-sm" />
           </div>
@@ -166,24 +153,7 @@ export const Index = (c: Context) => {
 
         {/* Footer */}
         <footer class="absolute bottom-0 left-0 right-0 p-6 text-center">
-          <p class="text-zinc-600 text-xs">
-            ElevenLabs Conversational AI + Anam Avatar •{" "}
-            <a
-              href="https://elevenlabs.io/docs/agents-platform/overview"
-              target="_blank"
-              class="text-zinc-500 hover:text-labs-400 transition-colors"
-            >
-              11Labs Docs
-            </a>
-            {" • "}
-            <a
-              href="https://docs.anam.ai"
-              target="_blank"
-              class="text-zinc-500 hover:text-labs-400 transition-colors"
-            >
-              Anam Docs
-            </a>
-          </p>
+          <p class="text-zinc-600 text-xs">Concorde AI</p>
         </footer>
       </div>
     </>
