@@ -208,14 +208,16 @@ window.addEventListener("beforeunload", stop);
 console.log("Concorde AI Voice Avatar ready");
 // ============================================================================
 // EMBED MODE
-// Activé par ?embed=1 dans l'URL. Masque tout le chrome (header, footer,
-// bouton, placeholder de statut) et démarre la conversation automatiquement.
-// Utilisé par la maquette MVP2 Concorde AI pour intégrer cet agent dans
-// le cadre Oscar via iframe.
+// Activé par ?embed=1. Masque le chrome, auto-démarre la conversation, et
+// communique avec la maquette parent via postMessage :
+// - "oscar:ready" envoyé quand le <video> Anam joue effectivement (avatar
+//   visible) → la maquette peut alors fader le flou et révéler l'iframe.
+// - "oscar:mute" reçu de la maquette quand l'utilisateur clique le bouton
+//   son → on mute/unmute la <video> Anam (toute la voix d'Oscar passe par là).
 // ============================================================================
 
 if (new URLSearchParams(window.location.search).has("embed")) {
-  // CSS injecté dynamiquement : strip de tout le chrome, remplit l'iframe.
+  // CSS d'override pour masquer tout l'habillage et remplir l'iframe
   const embedStyle = document.createElement("style");
   embedStyle.textContent = `
     body { background: #000 !important; }
@@ -239,11 +241,36 @@ if (new URLSearchParams(window.location.search).has("embed")) {
   `;
   document.head.appendChild(embedStyle);
 
-  // Auto-déclenche le bouton "Start Conversation". Délai court pour
-  // s'assurer que les listeners sont câblés et que le user gesture
-  // (clic dans la maquette parent qui a chargé l'iframe) est encore
-  // actif pour la demande de permission micro.
+  // Signale au parent que l'avatar est visible. L'event 'playing' fire au
+  // moment où la <video> Anam commence effectivement à rendre des frames
+  // (différent de 'loadedmetadata' qui est trop précoce). { once: true }
+  // car on n'a besoin de signaler la transition initiale qu'une seule fois.
+  anamVideo.addEventListener("playing", () => {
+    try {
+      window.parent.postMessage({ type: "oscar:ready" }, "*");
+    } catch (e) {
+      console.warn("[embed] postMessage oscar:ready failed", e);
+    }
+  }, { once: true });
+
+  // Écoute les ordres de mute venant de la maquette parent. Toute la voix
+  // d'Oscar passe par l'élément <video id="anam-video"> (Anam lit l'audio
+  // ElevenLabs streamé via createAgentAudioInputStream et le rejoue avec
+  // lipsync), donc muter cet élément coupe tout l'audio.
+  window.addEventListener("message", (event) => {
+    if (event.data?.type === "oscar:mute") {
+      anamVideo.muted = !!event.data.muted;
+    }
+  });
+
+  // Auto-déclenche le bouton "Start Conversation" après un court délai
+  // (laisse les listeners se câbler).
   setTimeout(() => {
+    if (!isConnected) {
+      connectBtn.click();
+    }
+  }, 100);
+}
     if (!isConnected) {
       connectBtn.click();
     }
