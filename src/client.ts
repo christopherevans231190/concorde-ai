@@ -271,8 +271,3 @@ if (new URLSearchParams(window.location.search).has("embed")) {
     }
   }, 100);
 }
-    if (!isConnected) {
-      connectBtn.click();
-    }
-  }, 100);
-}
