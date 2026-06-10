@@ -217,26 +217,59 @@ console.log("Concorde AI Voice Avatar ready");
 // ============================================================================
 
 if (new URLSearchParams(window.location.search).has("embed")) {
-  // CSS d'override pour masquer tout l'habillage et remplir l'iframe
+  // CSS d'override. Tout est mis en position:absolute inset:0 pour éviter
+  // tout reflow flex pendant les transitions de taille de l'iframe parent
+  // (sinon une bande noire apparaît côté pendant le redimensionnement
+  // fullscreen → corner du cadre Oscar dans la maquette).
   const embedStyle = document.createElement("style");
   embedStyle.textContent = `
-    body { background: #000 !important; }
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: #000 !important;
+      overflow: hidden !important;
+    }
     body > div.fixed.inset-0 { display: none !important; }
     header, footer, #connect-btn, #avatar-placeholder { display: none !important; }
-    main { padding: 0 !important; gap: 0 !important; }
+    main {
+      position: absolute !important;
+      inset: 0 !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+    }
     main > div:first-of-type {
-      height: 100vh !important;
-      width: 100vw !important;
-      max-width: 100% !important;
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      display: block !important;
     }
     #avatar-container {
-      height: 100% !important;
+      position: absolute !important;
+      inset: 0 !important;
       width: 100% !important;
-      max-width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
       aspect-ratio: auto !important;
       border-radius: 0 !important;
       border: none !important;
       background: #000 !important;
+    }
+    #anam-video {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      object-position: center !important;
     }
   `;
   document.head.appendChild(embedStyle);
