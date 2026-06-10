@@ -206,3 +206,46 @@ connectBtn.addEventListener("click", () => {
 window.addEventListener("beforeunload", stop);
 
 console.log("Concorde AI Voice Avatar ready");
+// ============================================================================
+// EMBED MODE
+// Activé par ?embed=1 dans l'URL. Masque tout le chrome (header, footer,
+// bouton, placeholder de statut) et démarre la conversation automatiquement.
+// Utilisé par la maquette MVP2 Concorde AI pour intégrer cet agent dans
+// le cadre Oscar via iframe.
+// ============================================================================
+
+if (new URLSearchParams(window.location.search).has("embed")) {
+  // CSS injecté dynamiquement : strip de tout le chrome, remplit l'iframe.
+  const embedStyle = document.createElement("style");
+  embedStyle.textContent = `
+    body { background: #000 !important; }
+    body > div.fixed.inset-0 { display: none !important; }
+    header, footer, #connect-btn, #avatar-placeholder { display: none !important; }
+    main { padding: 0 !important; gap: 0 !important; }
+    main > div:first-of-type {
+      height: 100vh !important;
+      width: 100vw !important;
+      max-width: 100% !important;
+    }
+    #avatar-container {
+      height: 100% !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      aspect-ratio: auto !important;
+      border-radius: 0 !important;
+      border: none !important;
+      background: #000 !important;
+    }
+  `;
+  document.head.appendChild(embedStyle);
+
+  // Auto-déclenche le bouton "Start Conversation". Délai court pour
+  // s'assurer que les listeners sont câblés et que le user gesture
+  // (clic dans la maquette parent qui a chargé l'iframe) est encore
+  // actif pour la demande de permission micro.
+  setTimeout(() => {
+    if (!isConnected) {
+      connectBtn.click();
+    }
+  }, 100);
+}
