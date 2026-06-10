@@ -253,10 +253,17 @@ if (new URLSearchParams(window.location.search).has("embed")) {
       display: block !important;
     }
     #avatar-container {
-      position: absolute !important;
-      inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
+      position: fixed !important;
+      /* Overscale 10% : le contenu dépasse le viewport de l'iframe pour
+         absorber le lag de redimensionnement du viewport interne pendant
+         les transitions du cadre parent (maquette). Combiné avec
+         l'overscale de l'iframe element côté maquette (10% également),
+         on garantit que la zone visible est toujours remplie même en
+         pic de lag. */
+      top: -5% !important;
+      left: -5% !important;
+      width: 110% !important;
+      height: 110% !important;
       max-width: none !important;
       aspect-ratio: auto !important;
       border-radius: 0 !important;
